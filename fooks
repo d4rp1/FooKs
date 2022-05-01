@@ -1,15 +1,16 @@
 #!/bin/bash
 
 
-# Made by David Roldan (D4RP1)
+# Made by David Roldan (d4rp1)
 
 # Variables
 
 # Colors
-RED='\033[00;31m' GREEN='\033[00;32m' YELLOW='\033[00;33m' BLUE='\033[00;34m'
-PURPLE='\033[00;35m' CYAN='\033[00;36m' LIGHTGRAY='\033[00;37m' LRED='\033[01;31m'
-LGREEN='\033[01;32m' LYELLOW='\033[01;33m' LBLUE='\033[01;34m' LPURPLE='\033[01;35m'
 LCYAN='\033[01;36m' WHITE='\033[01;37m' RESTORE='\033[0m'
+RED='\033[00;31m' GREEN='\033[00;32m' YELLOW='\033[00;33m' 
+BLUE='\033[00;34m' PURPLE='\033[00;35m' CYAN='\033[00;36m' 
+LYELLOW='\033[01;33m' LBLUE='\033[01;34m' LPURPLE='\033[01;35m'
+LIGHTGRAY='\033[00;37m' LRED='\033[01;31m' LGREEN='\033[01;32m' 
 
 # Book lists
 MPLIST=$(curl 'https://www.gutenberg.org/ebooks/search/?sort_order=downloads' 2> /dev/null |
@@ -19,6 +20,22 @@ MPARRAY=($MPLIST)
 IDBLIST=$(curl 'https://www.gutenberg.org/ebooks/search/?sort_order=downloads' 2> /dev/null |
 grep 'class="link"' | tail -n25 | sed 's/<a class="link" href="\/ebooks\///p' | sed -e 's/"//p' | uniq | cut -d" " -f1)
 IDBARRAY=($IDBLIST)
+
+# Path and execute
+function paxecute () {
+	if [ -e "$PWD/$1" -a ! -x "$PWD/$1" ]; then
+
+		chmod +x "$PWD/$1" 2> /dev/null
+	fi
+
+	if [ $UID -eq 0 ]; then
+		if [ ! -e "/usr/bin/$1" ]; then
+			cp "$PWD/$1" /usr/bin/ 2> /dev/null
+		fi
+	fi
+}
+# The paxecute function is called
+paxecute "fooks" 2> /dev/null
 
 # Main
 TITLEFLGT=$(figlet 'FooKs')
@@ -76,19 +93,3 @@ read -p "¿Read or Download?  R | D  ->" ROD
 
 # The downread function is called
 downread $ROD $CHOOSENBOOK
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
