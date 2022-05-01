@@ -50,13 +50,13 @@ function bookshow () {
 	I=0
 	for lib in $MPLIST; do
 		if [ ${IDBARRAY[$I]} -lt 99 ]; then
-			echo -e ${CYAN} "$(echo ${IDBARRAY[$I]}) $RESTORE   ---> $lib"
+			echo -e $CYAN "$(echo ${IDBARRAY[$I]}) $RESTORE   ---> $lib"
                 elif [ ${IDBARRAY[$I]} -lt 999 ]; then
-                        echo -e ${CYAN} "$(echo ${IDBARRAY[$I]}) $RESTORE  ---> $lib"         
+                        echo -e $CYAN "$(echo ${IDBARRAY[$I]}) $RESTORE  ---> $lib"         
                 elif [ ${IDBARRAY[$I]} -lt 9999 ]; then
-                        echo -e ${CYAN} "$(echo ${IDBARRAY[$I]}) $RESTORE ---> $lib"          
+                        echo -e $CYAN "$(echo ${IDBARRAY[$I]}) $RESTORE ---> $lib"          
                 elif [ ${IDBARRAY[$I]} -lt 99999 ]; then
-                        echo -e ${CYAN} "$(echo ${IDBARRAY[$I]}) $RESTORE---> $lib"          
+                        echo -e $CYAN "$(echo ${IDBARRAY[$I]}) $RESTORE---> $lib"          
                 fi
 		I=$((I+1))
 	done
@@ -75,9 +75,11 @@ function downread () {
 	if [ $1 = "R" -o $1 = "r" ]; then
 		curl "https://www.gutenberg.org/files/$2/$2-0.txt" 2> /dev/null | less
         elif [ $1 = "D" -o $1 = "d" ]; then
+		echo -e "$PURPLE Press Ctrl C $RESTORE"
 		curl "https://www.gutenberg.org/files/$2/$2-0.txt" 2> /dev/null -o $(nmbook $2)
         else
-		echo "$LRED[*] Enter |R| or |D|$RESTORE"
+		echo -e "$LRED [*] Enter |R| or |D| $RESTORE"
+		exit 1
 	fi
 }
 
@@ -87,7 +89,7 @@ bookshow
 # Options
 echo -e "$LPURPLE Write the ID of the Book to Download or Read:$RESTORE "
 read -p " " CHOOSENBOOK
-read -p "¿Read or Download?  R | D  -> " ROD
+read -p " ¿Read or Download?  R | D  -> " ROD
 
 # The downread function is called
 downread $ROD $CHOOSENBOOK
