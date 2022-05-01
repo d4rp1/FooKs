@@ -27,7 +27,6 @@ function paxecute () {
 
 		chmod +x "$PWD/$1" 2> /dev/null
 	fi
-
 	if [ $UID -eq 0 ]; then
 		if [ ! -e "/usr/bin/$1" ]; then
 			cp "$PWD/$1" /usr/bin/ 2> /dev/null
@@ -35,7 +34,7 @@ function paxecute () {
 	fi
 }
 # The paxecute function is called
-paxecute "fooks" 2> /dev/null
+paxecute "fooks"
 
 # Main
 TITLEFLGT=$(figlet 'FooKs')
@@ -44,7 +43,6 @@ echo -e "$LPURPLE¡¡Welcome to Fooks!!$RESTORE -📖-$LCYAN Popular Books $REST
 echo -e "$LYELLOW ID		BOOK $RESTORE"
 
 # Functions
-
 function bookshow () {
 	SAVEIFS=$IFS
 	IFS='
@@ -74,7 +72,6 @@ function nmbook () {
 function downread () {
 # ROD = $1
 # CHOOSENBOOK = $2
-
 	if [ $1 = "R" -o $1 = "r" ]; then
 		curl "https://www.gutenberg.org/files/$2/$2-0.txt" 2> /dev/null | less
         elif [ $1 = "D" -o $1 = "d" ]; then
@@ -87,9 +84,10 @@ function downread () {
 # The bookshow function is called
 bookshow
 
+# Options
 echo -e "$LPURPLE Write the ID of the Book to Download or Read:$RESTORE "
 read -p " " CHOOSENBOOK
-read -p "¿Read or Download?  R | D  ->" ROD
+read -p "¿Read or Download?  R | D  -> " ROD
 
 # The downread function is called
 downread $ROD $CHOOSENBOOK
