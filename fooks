@@ -43,6 +43,10 @@ echo -e "$LPURPLE¡¡Welcome to Fooks!!$RESTORE -📖-$LCYAN Popular Books $REST
 echo -e "$LYELLOW ID		BOOK $RESTORE"
 
 # Functions
+function responsecode () {
+	ret= echo $(curl -s -o /dev/null -w "%{http_code}" $1)
+	return $ret
+}
 function bookshow () {
 	SAVEIFS=$IFS
 	IFS='
@@ -73,10 +77,20 @@ function downread () {
 # ROD = $1
 # CHOOSENBOOK = $2
 	if [ $1 = "R" -o $1 = "r" ]; then
-		curl "https://www.gutenberg.org/files/$2/$2-0.txt" 2> /dev/null | less
+		if [ $(responsecode https://www.gutenberg.org/files/$2/$2-0.txt) -eq 200 ]; then
+			curl "https://www.gutenberg.org/files/$2/$2-0.txt" 2> /dev/null | less
+		else
+			echo -e "$LRED book $2 not found $RESTORE"
+			exit 1
+		fi
         elif [ $1 = "D" -o $1 = "d" ]; then
-		echo -e "$PURPLE Press Ctrl C $RESTORE"
-		curl "https://www.gutenberg.org/files/$2/$2-0.txt" 2> /dev/null -o $(nmbook $2)
+		if [ $(responsecode https://www.gutenberg.org/files/$2/$2-0.txt) -eq 200 ]; then
+			echo -e "$PURPLE Press Ctrl C $RESTORE"
+			curl "https://www.gutenberg.org/files/$2/$2-0.txt" 2> /dev/null -o $(nmbook $2)
+		else
+			echo "$LRED book $2 not found $RESTORE"
+			exit 1
+		fi
         else
 		echo -e "$LRED [*] Enter |R| or |D| $RESTORE"
 		exit 1
