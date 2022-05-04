@@ -13,18 +13,17 @@ LYELLOW='\033[01;33m' LBLUE='\033[01;34m' LPURPLE='\033[01;35m'
 LIGHTGRAY='\033[00;37m' LRED='\033[01;31m' LGREEN='\033[01;32m' 
 
 # Book lists
-MPLIST=$(curl 'https://www.gutenberg.org/ebooks/search/?sort_order=downloads' 2> /dev/null |
+MPLIST=$(curl --get 'https://www.gutenberg.org/ebooks/search/?sort_order=downloads' 2> /dev/null |
 grep 'class="title"' | tail -n25 | sed 's/<span class="title">//p' | sed -e 's/<\/span>//p' | uniq | tr '[:lower:]' '[:upper:]' )
 MPARRAY=($MPLIST)
 
-IDBLIST=$(curl 'https://www.gutenberg.org/ebooks/search/?sort_order=downloads' 2> /dev/null |
+IDBLIST=$(curl --get 'https://www.gutenberg.org/ebooks/search/?sort_order=downloads' 2> /dev/null |
 grep 'class="link"' | tail -n25 | sed 's/<a class="link" href="\/ebooks\///p' | sed -e 's/"//p' | uniq | cut -d" " -f1)
 IDBARRAY=($IDBLIST)
 
 # Path and execute
 function paxecute () {
 	if [ -e "$PWD/$1" -a ! -x "$PWD/$1" ]; then
-
 		chmod +x "$PWD/$1" 2> /dev/null
 	fi
 	if [ $UID -eq 0 ]; then
@@ -68,7 +67,7 @@ function bookshow () {
 }
 
 function nmbook () {
-	NAMBOOK=$(curl https://www.gutenberg.org/ebooks/$1 2> /dev/null |
+	NAMBOOK=$(curl --get https://www.gutenberg.org/ebooks/$1 2> /dev/null |
 		grep h1 | sed -e 's/<h1 itemprop="name">//p' | sed 's/<\/h1>//p' | uniq)
 	echo "$NAMBOOK"
 }
@@ -78,7 +77,7 @@ function downread () {
 # CHOOSENBOOK = $2
 	if [ $1 = "R" -o $1 = "r" ]; then
 		if [ $(responsecode https://www.gutenberg.org/files/$2/$2-0.txt) -eq 200 ]; then
-			curl "https://www.gutenberg.org/files/$2/$2-0.txt" 2> /dev/null | less
+			curl --get "https://www.gutenberg.org/files/$2/$2-0.txt" 2> /dev/null | less
 		else
 			echo -e "$LRED book $2 not found $RESTORE"
 			exit 1
@@ -86,7 +85,7 @@ function downread () {
         elif [ $1 = "D" -o $1 = "d" ]; then
 		if [ $(responsecode https://www.gutenberg.org/files/$2/$2-0.txt) -eq 200 ]; then
 			echo -e "$PURPLE Press Ctrl C $RESTORE"
-			curl "https://www.gutenberg.org/files/$2/$2-0.txt" 2> /dev/null -o $(nmbook $2)
+			curl --get "https://www.gutenberg.org/files/$2/$2-0.txt" 2> /dev/null -o $(nmbook $2)
 		else
 			echo "$LRED book $2 not found $RESTORE"
 			exit 1
