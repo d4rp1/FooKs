@@ -13,11 +13,11 @@ git clone https://github.com/d4rp1/FooKs
 cd FooKs
 ```
 ```bash
-bash fooks
+bash fooks -h
 ```
 ___
 <p align="center">
-<img src="images/First.jpg"
+<img src="images/FooKs.jpg"
 	alt="First"
 	style="float: left; margin-right: 10px;" />
 </p>
