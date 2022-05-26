@@ -3,49 +3,13 @@
 
 # Made by David Roldan (d4rp1)
 
-# Variables
-
-# Colors
-LCYAN='\033[01;36m' WHITE='\033[01;37m' RESTORE='\033[0m'
-RED='\033[00;31m' GREEN='\033[00;32m' YELLOW='\033[00;33m' 
-BLUE='\033[00;34m' PURPLE='\033[00;35m' CYAN='\033[00;36m' 
-LYELLOW='\033[01;33m' LBLUE='\033[01;34m' LPURPLE='\033[01;35m'
-LIGHTGRAY='\033[00;37m' LRED='\033[01;31m' LGREEN='\033[01;32m' 
-
-# Book lists
-MPLIST=$(curl --get 'https://www.gutenberg.org/ebooks/search/?sort_order=downloads' 2> /dev/null |
-grep 'class="title"' | tail -n25 | sed 's/<span class="title">//p' | sed -e 's/<\/span>//p' | uniq | tr '[:lower:]' '[:upper:]' )
-MPARRAY=($MPLIST)
-
-IDBLIST=$(curl --get 'https://www.gutenberg.org/ebooks/search/?sort_order=downloads' 2> /dev/null |
-grep 'class="link"' | tail -n25 | sed 's/<a class="link" href="\/ebooks\///p' | sed -e 's/"//p' | uniq | cut -d" " -f1)
-IDBARRAY=($IDBLIST)
-
-# Path and execute
-function paxecute () {
-	if [ -e "$PWD/$1" -a ! -x "$PWD/$1" ]; then
-		chmod +x "$PWD/$1" 2> /dev/null
-	fi
-	if [ $UID -eq 0 ]; then
-		if [ ! -e "/usr/bin/$1" ]; then
-			cp "$PWD/$1" /usr/bin/ 2> /dev/null
-		fi
-	fi
-}
-# The paxecute function is called
-paxecute "fooks"
-
-# Main
-TITLEFLGT=$(figlet 'FooKs')
-echo -e "$TITLEFLGT"
-echo -e "$LPURPLE¡¡Welcome to Fooks!!$RESTORE -📖-$LCYAN Popular Books $RESTORE-📚-"
-echo -e "$LYELLOW ID		BOOK $RESTORE"
 
 # Functions
 function responsecode () {
 	ret= echo $(curl -s -o /dev/null -w "%{http_code}" $1)
 	return $ret
 }
+
 function bookshow () {
 	SAVEIFS=$IFS
 	IFS='
@@ -72,37 +36,95 @@ function nmbook () {
 	echo "$NAMBOOK"
 }
 
-function downread () {
-# ROD = $1
-# CHOOSENBOOK = $2
-	if [ $1 = "R" -o $1 = "r" ]; then
-		if [ $(responsecode https://www.gutenberg.org/files/$2/$2-0.txt) -eq 200 ]; then
-			curl --get "https://www.gutenberg.org/files/$2/$2-0.txt" 2> /dev/null | less
-		else
-			echo -e "$LRED book $2 not found $RESTORE"
-			exit 1
-		fi
-        elif [ $1 = "D" -o $1 = "d" ]; then
-		if [ $(responsecode https://www.gutenberg.org/files/$2/$2-0.txt) -eq 200 ]; then
-			echo -e "$PURPLE Press Ctrl C $RESTORE"
-			curl --get "https://www.gutenberg.org/files/$2/$2-0.txt" 2> /dev/null -o $(nmbook $2)
-		else
-			echo "$LRED book $2 not found $RESTORE"
-			exit 1
-		fi
-        else
-		echo -e "$LRED [*] Enter |R| or |D| $RESTORE"
+function readbook () {
+# CHOOSENBOOK = $1
+	if [ $(responsecode https://www.gutenberg.org/files/$1/$1-0.txt) -eq 200 ]; then
+		echo -e "\n${LPURPLE}[+] Reading${RESTORE}"
+		sleep 0.3
+		curl --get "https://www.gutenberg.org/files/$1/$1-0.txt" 2> /dev/null | less
+	else
+		echo -e "$LRED[!] book $1 not found $RESTORE"
 		exit 1
 	fi
 }
 
-# The bookshow function is called
-bookshow
+function dwnbook(){
+# CHOOSENBOOK = $1
+	if [ $(responsecode https://www.gutenberg.org/files/$1/$1-0.txt) -eq 200 ]; then
+		aux=$(($RANDOM-100))
+		echo -e "\n${LPURPLE}[+] Downloading${RESTORE}"
+		for i in $(seq 3); do
+			echo -e "\t•~•"
+			sleep 0.5
+			echo -e "\t^-^"
+		done
+		axel "https://www.gutenberg.org/files/$1/$1-0.txt" -o $(nmbook $1) &> /dev/null
+		echo -e "${LCYAN}Downloaded✓${RESTORE}"
+	else
+		echo -e "$LRED[!] book $1 not found $RESTORE"
+		exit 1
+	fi
+}
 
-# Options
-echo -e "$LPURPLE Write the ID of the Book to Download or Read:$RESTORE "
-read -p " " CHOOSENBOOK
-read -p " ¿Read or Download?  R | D  -> " ROD
+function ctrlC(){
+	echo -e "\n${YELLOW}[*] Exiting...${RESTORE}"
+	sleep 2 
+	exit 0
+}
 
-# The downread function is called
-downread $ROD $CHOOSENBOOK
+# Main page
+function mainPage(){
+	TITLEFLGT=$(figlet 'FooKs')
+	echo -e "$TITLEFLGT"
+	echo -e "$LPURPLE¡¡Welcome to Fooks!!$RESTORE -📖-$LCYAN Popular Books $RESTORE-📚-"
+	echo -e "$LYELLOW ID		BOOK $RESTORE"
+}
+
+# Help
+function help(){
+	echo -e "\nUsage: bash fooks [OPTIONS] [ID]\n"
+	echo -e "-h\t\tPrint this help\n-s\t\tShow available books\n-r [ID]\t\tRead the book\n-d [ID]\t\tDownload the book"
+}
+
+# Exit the program
+trap ctrlC INT
+
+# Variables
+
+# Colors
+LCYAN='\033[01;36m' WHITE='\033[01;37m' RESTORE='\033[0m'
+RED='\033[00;31m' GREEN='\033[00;32m' YELLOW='\033[00;33m' 
+BLUE='\033[00;34m' PURPLE='\033[00;35m' CYAN='\033[00;36m' 
+LYELLOW='\033[01;33m' LBLUE='\033[01;34m' LPURPLE='\033[01;35m'
+LIGHTGRAY='\033[00;37m' LRED='\033[01;31m' LGREEN='\033[01;32m' 
+
+# Book lists
+MPLIST=$(curl --get 'https://www.gutenberg.org/ebooks/search/?sort_order=downloads' 2> /dev/null |
+grep 'class="title"' | tail -n25 | sed 's/<span class="title">//p' | sed -e 's/<\/span>//p' | uniq | tr '[:lower:]' '[:upper:]' )
+declare -a MPARRAY=($MPLIST)
+
+IDBLIST=$(curl --get 'https://www.gutenberg.org/ebooks/search/?sort_order=downloads' 2> /dev/null |
+grep 'class="link"' | tail -n25 | sed 's/<a class="link" href="\/ebooks\///p' | sed -e 's/"//p' | uniq | cut -d" " -f1)
+declare -a IDBARRAY=($IDBLIST)
+
+# Main
+
+while getopts 'hd:r:s' option 2>/dev/null; do
+	case $option in
+		h)
+			help;exit 0;;
+		d)
+			dwnbook $OPTARG;;
+		r)
+			readbook $OPTARG;;
+		s)
+			mainPage;bookshow;;
+		*)
+			echo -e "\nInvalid option: \"$@\"\nUse -h to list all available options";exit 1;;
+	esac
+done
+
+if [ -z $OPTARG ]; then
+	echo -e "\nUsage: bash fooks [OPTIONS] [ID]\
+		\nUse -h to list all available options."
+fi
