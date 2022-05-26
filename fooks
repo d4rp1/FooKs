@@ -79,7 +79,7 @@ function mainPage(){
 
 # Help
 function help(){
-	echo -e "\nUsage: bash fooks [OPTIONS] [ID]\n"
+	echo -e "Usage: bash fooks [OPTIONS] [ID]\n"
 	echo -e "-h\t\tPrint this help\n-s\t\tShow available books\n-r [ID]\t\tRead the book\n-d [ID]\t\tDownload the book"
 }
 
@@ -117,11 +117,11 @@ while getopts 'hd:r:s' option 2>/dev/null; do
 		s)
 			mainPage;bookshow;;
 		*)
-			echo -e "\nInvalid option: \"$@\"\nUse -h to list all available options";exit 1;;
+			echo -e "Invalid option: \"$@\"\nUse -h to list all available options";exit 1;;
 	esac
 done
 
 if [ -z $OPTARG ]; then
-	echo -e "\nUsage: bash fooks [OPTIONS] [ID]\
+	echo -e "Usage: bash fooks [OPTIONS] [ID]\
 		\nUse -h to list all available options."
 fi
