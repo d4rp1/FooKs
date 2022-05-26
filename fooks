@@ -1,8 +1,6 @@
 #!/bin/bash
 
-
 # Made by David Roldan (d4rp1)
-
 
 # Functions
 function responsecode () {
