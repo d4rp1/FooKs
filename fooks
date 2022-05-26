@@ -49,7 +49,6 @@ function readbook () {
 function dwnbook(){
 # CHOOSENBOOK = $1
 	if [ $(responsecode https://www.gutenberg.org/files/$1/$1-0.txt) -eq 200 ]; then
-		aux=$(($RANDOM-100))
 		echo -e "\n${LPURPLE}[+] Downloading${RESTORE}"
 		for i in $(seq 3); do
 			echo -e "\t•~•"
