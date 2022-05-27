@@ -55,7 +55,7 @@ function dwnbook(){
 			sleep 0.5
 			echo -e "\t^-^"
 		done
-		axel "https://www.gutenberg.org/files/$1/$1-0.txt" -o $(nmbook $1) &> /dev/null 
+		axel "https://www.gutenberg.org/files/$1/$1-0.txt" -o $(nmbook $1) &> /dev/null\
 		|| curl --get "https://www.gutenberg.org/files/$1/$1-0.txt" 2> /dev/null -o $(nmbook $1)
 		echo -e "${LCYAN}Downloaded✓${RESTORE}\n"
 	else
