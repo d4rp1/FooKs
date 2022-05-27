@@ -14,23 +14,16 @@ function bookshow () {
 	'
 	I=0
 	for lib in $MPLIST; do
-		if [ ${IDBARRAY[$I]} -lt 99 ]; then
-			echo -e $CYAN "$(echo ${IDBARRAY[$I]}) $RESTORE   ---> $lib"
-                elif [ ${IDBARRAY[$I]} -lt 999 ]; then
-                        echo -e $CYAN "$(echo ${IDBARRAY[$I]}) $RESTORE  ---> $lib"         
-                elif [ ${IDBARRAY[$I]} -lt 9999 ]; then
-                        echo -e $CYAN "$(echo ${IDBARRAY[$I]}) $RESTORE ---> $lib"          
-                elif [ ${IDBARRAY[$I]} -lt 99999 ]; then
-                        echo -e $CYAN "$(echo ${IDBARRAY[$I]}) $RESTORE---> $lib"          
-                fi
+		echo -e "$CYAN ${IDBARRAY[$I]} $RESTORE\t---> $lib"
 		I=$((I+1))
 	done
+	echo
 	IFS=$SAVEIFS
 }
 
 function nmbook () {
-	NAMBOOK=$(curl --get https://www.gutenberg.org/ebooks/$1 2> /dev/null |
-		grep h1 | sed -e 's/<h1 itemprop="name">//p' | sed 's/<\/h1>//p' | uniq)
+	NAMBOOK= curl --get https://www.gutenberg.org/ebooks/$1 2> /dev/null |
+		grep h1 | sed -e 's/<h1 itemprop="name">//p' | sed 's/<\/h1>//p' | uniq
 	echo "$NAMBOOK"
 }
 
@@ -55,8 +48,9 @@ function dwnbook(){
 			sleep 0.5
 			echo -e "\t^-^"
 		done
-		axel "https://www.gutenberg.org/files/$1/$1-0.txt" -o $(nmbook $1) &> /dev/null\
-		|| curl --get "https://www.gutenberg.org/files/$1/$1-0.txt" 2> /dev/null -o $(nmbook $1)
+		wget "https://www.gutenberg.org/files/$1/$1-0.txt" &> /dev/null -O $(nmbook $1)\
+		|| axel "https://www.gutenberg.org/files/$1/$1-0.txt" &> /dev/null -o $(nmbook $1)\
+		|| curl --get "https://www.gutenberg.org/files/$1/$1-0.txt" &> /dev/null -o $(nmbook $1)
 		echo -e "${LCYAN}Downloaded✓${RESTORE}\n"
 	else
 		echo -e "$LRED[!] book $1 not found $RESTORE"
@@ -99,11 +93,10 @@ LIGHTGRAY='\033[00;37m' LRED='\033[01;31m' LGREEN='\033[01;32m'
 # Book lists
 MPLIST=$(curl --get 'https://www.gutenberg.org/ebooks/search/?sort_order=downloads' 2> /dev/null |
 grep 'class="title"' | tail -n25 | sed 's/<span class="title">//p' | sed -e 's/<\/span>//p' | uniq | tr '[:lower:]' '[:upper:]' )
-declare -a MPARRAY=($MPLIST)
-
 IDBLIST=$(curl --get 'https://www.gutenberg.org/ebooks/search/?sort_order=downloads' 2> /dev/null |
 grep 'class="link"' | tail -n25 | sed 's/<a class="link" href="\/ebooks\///p' | sed -e 's/"//p' | uniq | cut -d" " -f1)
-declare -a IDBARRAY=($IDBLIST)
+
+declare -a MPARRAY=($MPLIST) & declare -a IDBARRAY=($IDBLIST)
 
 # Main
 
