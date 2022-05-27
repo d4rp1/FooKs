@@ -22,16 +22,15 @@ function bookshow () {
 }
 
 function nmbook () {
-	NAMBOOK= curl --get https://www.gutenberg.org/ebooks/$1 2> /dev/null |
-		grep h1 | sed -e 's/<h1 itemprop="name">//p' | sed 's/<\/h1>//p' | uniq
+	NAMBOOK= curl --get https://www.gutenberg.org/files/$1/$1-0.txt 2> /dev/null |\
+                head -n1 | awk '{print $6$7".fooks.txt"}' | sed 's/,//g'
 	echo "$NAMBOOK"
 }
 
 function readbook () {
 # CHOOSENBOOK = $1
+	echo -e "\n${LPURPLE}[+] Reading${RESTORE}"
 	if [ $(responsecode https://www.gutenberg.org/files/$1/$1-0.txt) -eq 200 ]; then
-		echo -e "\n${LPURPLE}[+] Reading${RESTORE}"
-		sleep 0.3
 		curl --get "https://www.gutenberg.org/files/$1/$1-0.txt" 2> /dev/null | less
 	else
 		echo -e "$LRED[!] book $1 not found $RESTORE"
@@ -41,11 +40,11 @@ function readbook () {
 
 function dwnbook(){
 # CHOOSENBOOK = $1
+	echo -e "\n${LPURPLE}[+] Downloading${RESTORE}"
 	if [ $(responsecode https://www.gutenberg.org/files/$1/$1-0.txt) -eq 200 ]; then
-		echo -e "\n${LPURPLE}[+] Downloading${RESTORE}"
 		for i in $(seq 3); do
 			echo -e "\t•~•"
-			sleep 0.5
+			sleep 0.3
 			echo -e "\t^-^"
 		done
 		wget "https://www.gutenberg.org/files/$1/$1-0.txt" &> /dev/null -O $(nmbook $1)\
@@ -60,7 +59,7 @@ function dwnbook(){
 
 function ctrlC(){
 	echo -e "\n${YELLOW}[*] Exiting...${RESTORE}"
-	sleep 2 
+	sleep 1
 	exit 0
 }
 
