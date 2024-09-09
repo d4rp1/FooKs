@@ -1,7 +1,7 @@
 ___
 # 📚FooKs
 
-**FooKs** is a bash script where you can read and download books for free on your terminal or command line, It is based on Project Gutenberg and is the fastest way to download and read books.
+**FooKs** is a Bash script that allows you to read and download books for free directly from your terminal or command line. It is based on Project Gutenberg and is the fastest way to access and enjoy books.
 ___
 # Installation
 
